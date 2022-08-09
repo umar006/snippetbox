@@ -19,14 +19,14 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 
 	tmpl, err := template.ParseFiles(files...)
 	if err != nil {
-		app.errorLog.Print(err.Error())
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		app.serverError(w, err)
 		return
 	}
 
 	err = tmpl.ExecuteTemplate(w, "base", nil)
 	if err != nil {
-		app.errorLog.Print(err.Error())
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		app.serverError(w, err)
+	}
+}
 	}
 }
