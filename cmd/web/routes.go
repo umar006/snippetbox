@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func (app *application) routes() *http.ServeMux {
+func (app *application) routes() http.Handler {
 	staticDir := flag.String("staticDir", "./ui/static/", "Path to static assets")
 
 	mux := http.NewServeMux()
@@ -17,5 +17,5 @@ func (app *application) routes() *http.ServeMux {
 	mux.HandleFunc("/snippet/view", app.snippetView)
 	mux.HandleFunc("/snippet/create", app.snippetCreate)
 
-	return mux
+	return secureHeaders(mux)
 }
