@@ -13,6 +13,10 @@ func (app *application) routes() http.Handler {
 
 	router := httprouter.New()
 
+	router.NotFound = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		app.notFound(w)
+	})
+
 	fileServer := http.FileServer(http.Dir(*staticDir))
 	router.Handler(http.MethodGet, "/static/", http.StripPrefix("/static", fileServer))
 
