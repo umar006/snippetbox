@@ -130,3 +130,36 @@ func TestUserModelInsertError(t *testing.T) {
 		})
 	}
 }
+
+func TestUserModelAuthenticate(t *testing.T) {
+	if testing.Short() {
+		t.Skip("models: skipping integration test")
+	}
+
+	tests := []struct {
+		name         string
+		userEmail    string
+		userPassword string
+		wantID       int
+	}{
+		{
+			name:         "User authenticated",
+			userEmail:    "alice@example.com",
+			userPassword: "alice",
+			wantID:       1,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			db := newTestDB(t)
+
+			m := UserModel{db}
+
+			id, err := m.Authenticate(test.userEmail, test.userPassword)
+
+			assert.NilError(t, err)
+			assert.Equal(t, id, test.wantID)
+		})
+	}
+}
