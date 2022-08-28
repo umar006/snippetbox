@@ -46,3 +46,44 @@ func TestUserModelExists(t *testing.T) {
 		})
 	}
 }
+
+func TestUserModelInsert(t *testing.T) {
+	if testing.Short() {
+		t.Skip("models: skipping integration test")
+	}
+
+	tests := []struct {
+		name         string
+		userID       int
+		userName     string
+		userEmail    string
+		userPassword string
+		want         bool
+	}{
+		{
+			name:         "Valid insert",
+			userID:       2,
+			userName:     "umar",
+			userEmail:    "umar@test.com",
+			userPassword: "test",
+			want:         true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			db := newTestDB(t)
+
+			m := UserModel{db}
+
+			err := m.Insert(test.userName, test.userEmail, test.userPassword)
+
+			assert.NilError(t, err)
+
+			exists, err := m.Exists(test.userID)
+
+			assert.Equal(t, exists, test.want)
+			assert.NilError(t, err)
+		})
+	}
+}
