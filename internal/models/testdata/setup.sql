@@ -24,3 +24,9 @@ INSERT INTO users (name, email, hashed_password, created) VALUES (
     '$2a$12$ITTeFp.T37uZnh4Fck2FCe5dHtQDlPGYlobK.TwhIcQ/84LUROhv.',
     '2022-01-01 10:00:00'
 );
+
+INSERT INTO snippets (title, content, created, expires)
+VALUES 
+    ('cat1', 'pompomtut1', '2022-02-02 10:00:00', '2023-02-02 10:00:00'),
+    ('cat2', 'pompomtut2', '2022-02-02 10:00:00', '2023-02-02 10:00:00'),
+    ('cat3', 'pompomtut3', '2022-02-02 10:00:00', '2023-02-02 10:00:00');
