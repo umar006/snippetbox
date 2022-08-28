@@ -1,6 +1,8 @@
 package mocks
 
-import "snippetbox.umaralfaruq/internal/models"
+import (
+	"snippetbox.umaralfaruq/internal/models"
+)
 
 type UserModel struct{}
 
