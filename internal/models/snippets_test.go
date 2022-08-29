@@ -96,3 +96,38 @@ func TestSnippetModelInsert(t *testing.T) {
 		assert.Equal(t, id, wantID)
 	})
 }
+
+func TestSnippetModelLatest(t *testing.T) {
+	if testing.Short() {
+		t.Skip("models: skipping integration test")
+	}
+
+	wantSnippet := []Snippet{
+		{
+			ID:      1,
+			Title:   "cat1",
+			Content: "poempoemtut1",
+		},
+		{
+			ID:      2,
+			Title:   "cat2",
+			Content: "poempoemtut2",
+		},
+		{
+			ID:      3,
+			Title:   "cat3",
+			Content: "poempoemtut3",
+		},
+	}
+
+	t.Run("Get 3 snippets", func(t *testing.T) {
+		db := newTestDB(t)
+
+		m := SnippetModel{db}
+
+		snippets, err := m.Latest()
+
+		assert.NilError(t, err)
+		assert.Equal(t, len(snippets), len(wantSnippet))
+	})
+}
