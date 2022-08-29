@@ -424,6 +424,7 @@ func TestUserLogin(t *testing.T) {
 		})
 	}
 }
+
 func TestUserLogout(t *testing.T) {
 	app := newTestApplication(t)
 
@@ -434,5 +435,23 @@ func TestUserLogout(t *testing.T) {
 		code, _, _ := testServer.postForm(t, "/user/logout", nil)
 
 		assert.Equal(t, code, http.StatusBadRequest)
+	})
+
+	t.Run("Authenticated", func(t *testing.T) {
+		_, _, body := testServer.get(t, "/user/login")
+		validCSRFToken := extractCSRFToken(t, body)
+
+		form := url.Values{}
+		form.Add("email", "alice@example.com")
+		form.Add("password", "pa$$word")
+		form.Add("csrf_token", validCSRFToken)
+
+		testServer.postForm(t, "/user/login", form)
+
+		code, headers, _ := testServer.postForm(t, "/user/logout", form)
+		t.Log(headers)
+
+		assert.Equal(t, code, http.StatusSeeOther)
+		assert.Equal(t, headers.Get("Location"), "/")
 	})
 }
