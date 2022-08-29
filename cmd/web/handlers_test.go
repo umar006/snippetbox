@@ -424,3 +424,15 @@ func TestUserLogin(t *testing.T) {
 		})
 	}
 }
+func TestUserLogout(t *testing.T) {
+	app := newTestApplication(t)
+
+	testServer := newTestServer(t, app.routes())
+	defer testServer.Close()
+
+	t.Run("Unauthenticated", func(t *testing.T) {
+		code, _, _ := testServer.postForm(t, "/user/logout", nil)
+
+		assert.Equal(t, code, http.StatusBadRequest)
+	})
+}
