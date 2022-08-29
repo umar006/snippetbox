@@ -86,6 +86,19 @@ func TestSnippetView(t *testing.T) {
 	}
 }
 
+func TestSnippetCreate(t *testing.T) {
+	app := newTestApplication(t)
+
+	testServer := newTestServer(t, app.routes())
+	defer testServer.Close()
+
+	t.Run("Unauthenticated", func(t *testing.T) {
+		code, headers, _ := testServer.get(t, "/snippet/create")
+
+		assert.Equal(t, code, http.StatusSeeOther)
+		assert.Equal(t, headers.Get("Location"), "/user/login")
+	})
+}
 func TestUserSignup(t *testing.T) {
 	app := newTestApplication(t)
 	testServer := newTestServer(t, app.routes())
