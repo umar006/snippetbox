@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"net/url"
+	"strings"
 	"testing"
 
 	"snippetbox.umaralfaruq/internal/assert"
@@ -114,6 +115,94 @@ func TestSnippetCreate(t *testing.T) {
 
 		assert.Equal(t, code, http.StatusOK)
 		assert.StringContains(t, body, "action='/snippet/create' method='POST'")
+
+		const (
+			validTitle   = "Cat paw"
+			validContent = "Cat paw paw"
+			validExpires = "7"
+			formTag      = "action='/snippet/create' method='POST'"
+		)
+
+		tests := []struct {
+			name           string
+			snippetTitle   string
+			snippetContent string
+			snippetExpires string
+			csrfToken      string
+			wantCode       int
+			wantFormTag    string
+		}{
+			{
+				name:           "Valid submission",
+				snippetTitle:   validTitle,
+				snippetContent: validContent,
+				snippetExpires: validExpires,
+				csrfToken:      validCSRFToken,
+				wantCode:       http.StatusSeeOther,
+			},
+			{
+				name:           "Invalid CSRF token",
+				snippetTitle:   validTitle,
+				snippetContent: validContent,
+				snippetExpires: validExpires,
+				csrfToken:      "salahcuy",
+				wantCode:       http.StatusBadRequest,
+			},
+			{
+				name:           "Empty title",
+				snippetTitle:   "",
+				snippetContent: validContent,
+				snippetExpires: validExpires,
+				csrfToken:      validCSRFToken,
+				wantCode:       http.StatusUnprocessableEntity,
+				wantFormTag:    formTag,
+			},
+			{
+				name:           "Empty content",
+				snippetTitle:   validTitle,
+				snippetContent: "",
+				snippetExpires: validExpires,
+				csrfToken:      validCSRFToken,
+				wantCode:       http.StatusUnprocessableEntity,
+				wantFormTag:    formTag,
+			},
+			{
+				name:           "Title more than 100 characters long",
+				snippetTitle:   strings.Repeat("cat", 40),
+				snippetContent: validContent,
+				snippetExpires: validExpires,
+				csrfToken:      validCSRFToken,
+				wantCode:       http.StatusUnprocessableEntity,
+				wantFormTag:    formTag,
+			},
+			{
+				name:           "Expires not equal 1, 7 or 365",
+				snippetTitle:   validTitle,
+				snippetContent: validContent,
+				snippetExpires: "6",
+				csrfToken:      validCSRFToken,
+				wantCode:       http.StatusUnprocessableEntity,
+				wantFormTag:    formTag,
+			},
+		}
+
+		for _, test := range tests {
+			t.Run(test.name, func(t *testing.T) {
+				form := url.Values{}
+				form.Add("title", test.snippetTitle)
+				form.Add("content", test.snippetContent)
+				form.Add("expires", test.snippetExpires)
+				form.Add("csrf_token", test.csrfToken)
+
+				code, _, body := testServer.postForm(t, "/snippet/create", form)
+
+				assert.Equal(t, code, test.wantCode)
+
+				if test.wantFormTag != "" {
+					assert.StringContains(t, body, test.wantFormTag)
+				}
+			})
+		}
 	})
 }
 
