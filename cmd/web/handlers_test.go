@@ -8,6 +8,26 @@ import (
 	"snippetbox.umaralfaruq/internal/assert"
 )
 
+func TestHome(t *testing.T) {
+	app := newTestApplication(t)
+
+	testServer := newTestServer(t, app.routes())
+	defer testServer.Close()
+
+	var (
+		urlPath   = ""
+		wantCode  = http.StatusOK
+		wantTitle = "An old silent pond"
+	)
+
+	t.Run("Show latest snippets", func(t *testing.T) {
+		code, _, body := testServer.get(t, urlPath)
+
+		assert.Equal(t, code, wantCode)
+		assert.StringContains(t, body, wantTitle)
+	})
+}
+
 func TestSnippetView(t *testing.T) {
 	app := newTestApplication(t)
 
