@@ -72,3 +72,27 @@ func TestSnippetModelGetError(t *testing.T) {
 		})
 	}
 }
+
+func TestSnippetModelInsert(t *testing.T) {
+	if testing.Short() {
+		t.Skip("models: skipping integration test")
+	}
+
+	var (
+		title   = "cat4"
+		content = "poempoemtut4"
+		expires = 7
+		wantID  = 4
+	)
+
+	t.Run("Valid snippet", func(t *testing.T) {
+		db := newTestDB(t)
+
+		m := SnippetModel{db}
+
+		id, err := m.Insert(title, content, expires)
+
+		assert.NilError(t, err)
+		assert.Equal(t, id, wantID)
+	})
+}
