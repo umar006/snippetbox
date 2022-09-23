@@ -18,9 +18,6 @@ jobs:
     - name: Verify dependencies
       run: go mod verify
 
-    - name: Build
-      run: go build -v ./...
-
     - name: Run go vet
       run: go vet ./...
 
@@ -32,3 +29,7 @@ jobs:
 
     - name: Run unit tests
       run: go test -race -vet=off ./cmd/...
+
+    - name: Build
+      run: go build -v ./...
+
